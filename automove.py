@@ -26,7 +26,7 @@ class MyHandler(FileSystemEventHandler):
                 # In case of images i will put them in a sub folder depending on file modification date
                 last_modification = datetime.strptime(time.ctime(os.path.getmtime(src)), "%a %b %d %H:%M:%S %Y")
 
-                folder_destination = folder_images  \
+                folder_destination = folder_images + \
                                      str(last_modification.year) + "_" \
                                      + str(last_modification.month) + "/"
 
@@ -42,15 +42,21 @@ class MyHandler(FileSystemEventHandler):
                 new_destination = folder_pdf  + filename
 
 
-            if new_destination:
-                # Moves file to new destination
-                os.rename(src, new_destination)
+            try:
+                if new_destination:
+                    if not os.path.isfile(new_destination):
+                        os.rename( src, new_destination )# Moves file to new destination
+                        print(src + ' was moved to ' + new_destination)
+                    else:
+                        print(new_destination + " already exists on destination folder")
+            except:
+                print("No need to move : " + src)
 
 
 # Folders to track and destiny folders
-folder_to_track = os.path.expanduser('~') + "/Documentos/"
-folder_images = folder_to_track + "Imagenes/"
-folder_pdf = folder_to_track + "PDF/"
+folder_to_track = os.path.expanduser('~') + "/Documentos"
+folder_images = folder_to_track + "/Imagenes/"
+folder_pdf = folder_to_track + "/PDF/"
 
 event_handler = MyHandler()
 observer = Observer()
